@@ -1,1 +1,32 @@
-// TODO
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 0.625rem 3rem;
+}
+
+.info {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  color: var(--gray-50);
+
+  span {
+    display: flex;
+    align-items: center;
+    padding-left: 1.625rem;
+    font-size: 0.875rem;
+    align-items: center;
+  }
+
+  time {
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+  }
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-right: 0.5rem;
+  }
+}

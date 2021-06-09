@@ -1,1 +1,46 @@
-// TODO
+.content {
+  padding-left: 10.2rem;
+  h1 {
+    font-size: 1rem;
+    padding: 4rem 0;
+    color: var(--pink-50);
+    line-height: 1rem;
+    cursor: pointer;
+  }
+}
+
+.posts {
+  max-width: 720px;
+  margin-top: 2rem ;
+
+  a {
+      display: block;
+
+      //cada link depois do primeiro
+      & + a {
+          margin-top: 0.5rem;
+          padding-top: 1.5rem;
+      }
+
+      strong {
+          display: block;
+          font-size: 1.5rem;
+          font-weight: bold;
+          margin-top: 0.5rem;
+          line-height: 2rem;
+          transition: color 0.2s;
+          color: var(--white);
+      }
+
+      &:hover strong {
+          color: var(--gray-50);
+      }
+
+      h2 {
+        font-size: 1rem;
+        margin-top: 0.5rem;
+        color: var(--gray-100);
+        line-height: 1.375rem;
+      }
+  }
+}
