@@ -1,15 +1,19 @@
-import { GetStaticProps } from 'next';
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+import { GetStaticProps, GetStaticPaths } from 'next';
 
-import { getPrismicClient } from '../services/prismic';
 import Head from 'next/head';
 import Prismic from '@prismicio/client';
 import Link from 'next/link';
 import { FiCalendar, FiUser } from 'react-icons/fi';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
+import { useState } from 'react';
 import commonStyles from '../styles/common.module.scss';
 import styles from './home.module.scss';
-import { useState } from 'react';
+import { getPrismicClient } from '../services/prismic';
 
 interface Post {
   uid?: string;
@@ -28,9 +32,10 @@ interface PostPagination {
 
 interface HomeProps {
   postsPagination: PostPagination;
+  preview: boolean;
 }
 
-export default function Home({ postsPagination }: HomeProps) {
+export default function Home({ postsPagination, preview }: HomeProps) {
   const [nextPage, setNextPage] = useState(postsPagination.next_page);
   const [posts, setPosts] = useState(postsPagination.results);
 
@@ -48,15 +53,15 @@ export default function Home({ postsPagination }: HomeProps) {
               subtitle: post.data.subtitle,
               author: post.data.author,
             },
-          }
+          };
         });
         setPosts(newPosts);
-      })
+      });
   }
   return (
     <>
       <Head>
-        <title>spaceTravelling</title>
+        <title>Home | spaceTravelling</title>
       </Head>
       <div className={commonStyles.container}>
         <main className={styles.content}>
@@ -68,25 +73,29 @@ export default function Home({ postsPagination }: HomeProps) {
                   <h2>{post.data.subtitle}</h2>
                   <div className={commonStyles.info}>
                     <time>
-                      <FiCalendar />{
-                        format(
-                          new Date(post.first_publication_date),
-                          'd LLL YYY',
-                          { locale: ptBR }
-                        )
-                      }
+                      <FiCalendar />
+                      {format(
+                        new Date(post.first_publication_date),
+                        'd LLL YYY',
+                        { locale: ptBR }
+                      )}
                     </time>
-                    <span><FiUser />{post.data.author}</span>
+                    <span>
+                      <FiUser />
+                      {post.data.author}
+                    </span>
                   </div>
                 </a>
               </Link>
             ))}
-
-            {nextPage && (
-              <h1 onClick={loadMorePosts}>
-                Carregar mais posts
-              </h1>
+            {preview && (
+              <aside>
+                <Link href="/api/exit-preview">
+                  <a>Sair do modo Preview</a>
+                </Link>
+              </aside>
             )}
+            {nextPage && <h1 onClick={loadMorePosts}>Carregar mais posts</h1>}
           </div>
         </main>
       </div>
@@ -94,17 +103,42 @@ export default function Home({ postsPagination }: HomeProps) {
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getStaticPaths: GetStaticPaths = async () => {
   const prismic = getPrismicClient();
-  const postsResponse = await prismic.query([
-    Prismic.predicates.at('document.type', 'posts')
-  ], {
-    fetch: ['publication.title', 'publication.content'],
-  });
+  const posts = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      pageSize: 2, // posts per page
+    }
+  );
+
+  const paths = posts.results.map(post => ({
+    params: { slug: post.uid },
+  }));
+
+  return {
+    paths,
+    fallback: true,
+  };
+};
+
+export const getStaticProps: GetStaticProps<HomeProps> = async ({
+  preview = false,
+  previewData,
+}) => {
+  const prismic = getPrismicClient();
+  const postsResponse = await prismic.query(
+    [Prismic.predicates.at('document.type', 'posts')],
+    {
+      fetch: ['publication.title', 'publication.content'],
+    }
+  );
 
   const posts = postsResponse.results.map(post => {
     return {
       uid: post.uid,
+      pageSize: 2,
+      ref: previewData?.ref ?? null,
       first_publication_date: post.first_publication_date,
       data: {
         title: post.data.title,
@@ -121,7 +155,8 @@ export const getStaticProps: GetStaticProps = async () => {
 
   return {
     props: {
-      postsPagination
-    }
-  }
+      postsPagination,
+      preview,
+    },
+  };
 };

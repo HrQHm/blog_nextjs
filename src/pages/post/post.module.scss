@@ -17,6 +17,12 @@
     }
   }
 
+  .postEdited {
+    margin-top: 1.125rem;
+    font-style: italic;
+    color: var(--gray-50);
+  }
+
   h1 {
     margin-top: calc(25rem + 5rem);
     font-weight: 700;
@@ -24,7 +30,7 @@
     color: var(--white);
   }
 
-  section{
+  section {
     margin-top: 4.125rem;
     line-height: 1.4rem;
     font-size: 1.125rem;
@@ -34,6 +40,7 @@
       font-size: 2.25rem;
       color: var(--white);
       margin-bottom: 3rem;
+      line-height: 2rem;
     }
 
     .bodyContent {
@@ -51,7 +58,6 @@
       }
 
       p {
-
         a {
           color: var(--pink-50);
           transition: 0.2s;
@@ -62,7 +68,8 @@
         }
       }
 
-      ul, ol {
+      ul,
+      ol {
         li {
           margin-left: 0;
           margin-left: 1.5rem;
@@ -77,8 +84,27 @@
         }
       }
     }
-
   }
 
+  .navContainer {
+    margin-top: 3rem;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(215, 215, 215, 0.1);
+    padding-top: 3rem;
+    margin-bottom: 1.5rem;
 
+    span {
+      color: var(--pink-50);
+      transition: 0.2s;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+
+    div:last-child {
+      text-align: right;
+    }
+  }
 }
